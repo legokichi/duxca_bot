@@ -2,15 +2,19 @@
   "name": "duxca_bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bot.coffee",
   "scripts": {
+    "start": "coffee bot.coffee",
+    "debug": "DEBUG=express:* coffee bot.coffee",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.14.1",
+    "cors": "^2.7.1",
     "express": "^4.13.3",
+    "morgan": "^1.6.1",
     "twit": "^2.1.0"
   }
 }
