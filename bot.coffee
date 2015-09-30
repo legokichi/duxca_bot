@@ -2,11 +2,15 @@ express = require('express')
 morgan = require('morgan')
 bodyParser = require('body-parser')
 cors = require('cors')
+basicAuth = require('basic-auth-connect')
 tw = require("./fetch_twitter")
+[username, password] = require("./key_basic.json")
 
 app = express()
 router = express.Router()
 _cors = cors({origin: 'http://duxca.com'})
+_basic = basicAuth(username, password)
+
 app.options('*', _cors)
 app.use(morgan("dev", { immediate: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -34,7 +38,7 @@ router.route('/:owner_screen_name/lists/:slug')
     res.json({statusCode: 500, message: err})
 
 router.route('/:owner_screen_name/lists/:slug/add')
-.get _cors, (req, res)->
+.get _cors, _basic, (req, res)->
   {owner_screen_name, slug} = req.params
   {screen_names} = req.query
   screen_names = screen_names.split(/\s*,\s*/)
@@ -46,7 +50,7 @@ router.route('/:owner_screen_name/lists/:slug/add')
 
 
 router.route('/:owner_screen_name/lists/:slug/remove')
-.get _cors, (req, res)->
+.get _cors, _basic, (req, res)->
   {owner_screen_name, slug} = req.params
   {screen_names} = req.query
   screen_names = screen_names.split(/\s*,\s*/)
