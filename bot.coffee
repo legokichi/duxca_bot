@@ -1,25 +1,35 @@
-Twit = require "twit"
+express = require('express')
+bodyParser = require('body-parser')
+tw = require("./fetch_twitter")
 
-T = new Twit require("./key_duxca.json")
+app = express()
+router = express.Router()
 
-getList = ->
-  T.get "lists/list", {
-    screen_name: "duxca"
-  }, (err, data, response)->
-    console.log(data)
-    console.log(response)
-    console.error(err)
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use('/', router)
+app.listen(18080)
 
-getListMember = ->
-  T.get "lists/members", {
-    slug: "lv-3"
-    count: 5000
-    owner_screen_name: "duxca"
-  }, (err, data, response)->
-    tuples = data.users.map (a)-> a.screen_name
-    console.log tuples
-    console.log tuples.length
-    #console.log response
-    #console.error err
+router.route('/')
+.get (req, res)->
+  res.json({ message: 'root' })
 
-getListMember()
+router.route('/:screen_name/followers')
+.get (req, res)->
+  console.log(req)
+  {screen_name} = req.params
+  tw.getFollowers(screen_name)
+  .then (all)-> res.json(all)
+  .catch (err)->
+    res.statusCode = 500
+    res.send(500+"\n"+err)
+
+router.route('/:screen_name/lists/:slug')
+.get (req, res)->
+  console.log(req)
+  {screen_name, slug} = req.params
+  tw.getListMember(screen_name, slug)
+  .then (all)-> res.json(all)
+  .catch (err)->
+    res.statusCode = 500
+    res.send(500+"\n"+err)
